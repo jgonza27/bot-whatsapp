@@ -46,7 +46,8 @@ def whatsapp_reply():
     
     if '"ACTION": "SAVE"' in bot_reply:
         
-        db.guardar_lead("Usuario WhatsApp", sender_id, "Dirección capturada en chat", incoming_msg)
+        db.guardar_lead("Usuario WhatsApp", "", sender_id, "Dirección capturada en chat", incoming_msg)
+        
         msg = resp_twilio.message("¡Gracias! Hemos guardado tus datos correctamente.")
         del conversation_history[sender_id]
     else:
