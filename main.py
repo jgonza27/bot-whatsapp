@@ -2,6 +2,7 @@ from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 from openai import OpenAI
 import os
+import json
 import google_sheets as db 
 import streamlit as st
 
@@ -9,7 +10,7 @@ app = Flask(__name__)
 
 try:
     clave_groq = st.secrets["GROQ_API_KEY"]
-except Exception as e:
+except Exception:
     clave_groq = "ERROR_CLAVE"
 
 client = OpenAI(
@@ -23,7 +24,7 @@ SYSTEM_PROMPT = """
 Eres un asistente amable de una empresa. Tu objetivo es captar leads.
 Debes conseguir estos datos del usuario uno a uno:
 1. Nombre completo
-2. Dirección
+2. Dirección exacta
 3. Confirmación de interés.
 Si tienes todos los datos, responde con un JSON estricto: {"ACTION": "SAVE", "nombre": "...", "direccion": "...", "notas": "..."}
 Si te falta algún dato, sigue conversando y preguntando amablemente. NO inventes datos.
@@ -43,22 +44,32 @@ def whatsapp_reply():
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=conversation_history[sender_id],
-            temperature=0.7
+            temperature=0.1
         )
         bot_reply = response.choices[0].message.content
     except Exception as e:
-        return str(MessagingResponse().message(f"Error interno: {e}"))
+        return str(MessagingResponse().message(f"Error: {e}"))
 
     resp_twilio = MessagingResponse()
     
     if '"ACTION": "SAVE"' in bot_reply:
         try:
-            db.guardar_lead("Usuario WhatsApp", "", sender_id, "Direccion capturada", incoming_msg)
-            msg = resp_twilio.message("Gracias. Hemos guardado tus datos correctamente.")
-            if sender_id in conversation_history:
-                del conversation_history[sender_id]
-        except Exception as e:
-            msg = resp_twilio.message("Error al guardar datos.")
+            inicio = bot_reply.find('{')
+            fin = bot_reply.rfind('}') + 1
+            datos_json = json.loads(bot_reply[inicio:fin])
+            
+            db.guardar_lead(
+                datos_json.get("nombre", "Usuario WhatsApp"), 
+                "", 
+                sender_id, 
+                datos_json.get("direccion", "Direccion capturada"), 
+                datos_json.get("notas", incoming_msg)
+            )
+            
+            msg = resp_twilio.message(f"Gracias {datos_json.get('nombre')}. Hemos guardado tus datos correctamente.")
+            del conversation_history[sender_id]
+        except Exception:
+            msg = resp_twilio.message("Gracias. Hemos recibido tus datos.")
     else:
         conversation_history[sender_id].append({"role": "assistant", "content": bot_reply})
         msg = resp_twilio.message(bot_reply)
