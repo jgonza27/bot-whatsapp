@@ -29,18 +29,21 @@ Para levantar este proyecto necesitas:
     pip install -r requirements.txt
     ```
 
-# Ejecutar la aplicación
+### Ejecutar la aplicación
 
+Para levantar el proyecto completo necesitas 3 terminales abiertas:
+
+**Terminal 1 (Streamlit):**
 ```bash
 streamlit run dashboard.py
-    ```
+```
 
+**Terminal 2 (Ngrok):**
 ```bash
 ngrok http 5000
-    ```
+```
 
+**Terminal 3 (Bot):**
 ```bash
 python main.py
-    ```
-
-
+```
