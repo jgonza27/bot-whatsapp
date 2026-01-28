@@ -2,24 +2,15 @@ from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 from openai import OpenAI
 import os
-import google_sheets as db
+import google_sheets as db 
+import streamlit as st
 
 app = Flask(__name__)
 
-# Obtener la clave API de Groq desde variables de entorno
-clave_groq = os.getenv("GROQ_API_KEY")
-
-# Fallback: intentar obtener desde Streamlit secrets
-if not clave_groq:
-    try:
-        import streamlit as st
-        clave_groq = st.secrets["GROQ_API_KEY"]
-    except Exception as e:
-        print(f"Error al cargar clave desde secrets: {e}")
-
-# Validar que tenemos una clave válida
-if not clave_groq or clave_groq == "ERROR_CLAVE":
-    raise ValueError("GROQ_API_KEY no configurada. Configúrala como variable de entorno o en .streamlit/secrets.toml")
+try:
+    clave_groq = st.secrets["GROQ_API_KEY"]
+except Exception as e:
+    clave_groq = "ERROR_CLAVE"
 
 client = OpenAI(
     base_url="https://api.groq.com/openai/v1",
@@ -43,8 +34,6 @@ def whatsapp_reply():
     incoming_msg = request.values.get('Body', '').strip()
     sender_id = request.values.get('From', '')
 
-    print(f"Mensaje recibido de {sender_id}: {incoming_msg}")
-
     if sender_id not in conversation_history:
         conversation_history[sender_id] = [{"role": "system", "content": SYSTEM_PROMPT}]
     
@@ -57,9 +46,7 @@ def whatsapp_reply():
             temperature=0.7
         )
         bot_reply = response.choices[0].message.content
-        print(f"Respuesta del bot: {bot_reply}")
     except Exception as e:
-        print(f"Error en la API de Groq: {e}")
         return str(MessagingResponse().message(f"Error interno: {e}"))
 
     resp_twilio = MessagingResponse()
@@ -68,11 +55,9 @@ def whatsapp_reply():
         try:
             db.guardar_lead("Usuario WhatsApp", "", sender_id, "Direccion capturada", incoming_msg)
             msg = resp_twilio.message("Gracias. Hemos guardado tus datos correctamente.")
-            print(f"Lead guardado para {sender_id}")
             if sender_id in conversation_history:
                 del conversation_history[sender_id]
         except Exception as e:
-            print(f"Error al guardar en Google Sheets: {e}")
             msg = resp_twilio.message("Error al guardar datos.")
     else:
         conversation_history[sender_id].append({"role": "assistant", "content": bot_reply})
@@ -80,11 +65,5 @@ def whatsapp_reply():
 
     return str(resp_twilio)
 
-@app.route("/", methods=['GET'])
-def home():
-    return "Bot de WhatsApp funcionando correctamente"
-
 if __name__ == "__main__":
-    print("Iniciando servidor Flask en puerto 5000...")
-    print(f"GROQ_API_KEY configurada: {'Sí' if clave_groq else 'No'}")
     app.run(debug=True, port=5000)
