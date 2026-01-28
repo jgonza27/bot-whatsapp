@@ -29,13 +29,18 @@ Para levantar este proyecto necesitas:
     pip install -r requirements.txt
     ```
 
-# Ejecutar la aplicació
+# Ejecutar la aplicación
 
-# Una vez activo el entorno, lanza los siguientes comandos:
-
+```bash
 streamlit run dashboard.py
+    ```
 
+```bash
 ngrok http 5000
+    ```
 
+```bash
 python main.py
+    ```
+
 
