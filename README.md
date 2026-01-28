@@ -33,17 +33,17 @@ Para levantar este proyecto necesitas:
 
 Para levantar el proyecto completo necesitas 3 terminales abiertas:
 
-**Terminal 1 (Streamlit):**
+**Terminal 1 :**
 ```bash
 streamlit run dashboard.py
 ```
 
-**Terminal 2 (Ngrok):**
+**Terminal 2 :**
 ```bash
 ngrok http 5000
 ```
 
-**Terminal 3 (Bot):**
+**Terminal 3 :**
 ```bash
 python main.py
 ```
