@@ -9,9 +9,8 @@ app = Flask(__name__)
 
 try:
     clave_groq = st.secrets["GROQ_API_KEY"]
-except FileNotFoundError:
-    print("ERROR: No encuentro el archivo .streamlit/secrets.toml")
-    clave_groq = "ERROR"
+except Exception as e:
+    clave_groq = "ERROR_CLAVE"
 
 client = OpenAI(
     base_url="https://api.groq.com/openai/v1",
@@ -48,15 +47,18 @@ def whatsapp_reply():
         )
         bot_reply = response.choices[0].message.content
     except Exception as e:
-        return str(MessagingResponse().message(f"Error en IA: {e}"))
+        return str(MessagingResponse().message(f"Error interno: {e}"))
 
     resp_twilio = MessagingResponse()
     
     if '"ACTION": "SAVE"' in bot_reply:
-        db.guardar_lead("Usuario WhatsApp", "", sender_id, "Direccion capturada", incoming_msg)
-        msg = resp_twilio.message("Gracias. Hemos guardado tus datos correctamente.")
-        if sender_id in conversation_history:
-            del conversation_history[sender_id]
+        try:
+            db.guardar_lead("Usuario WhatsApp", "", sender_id, "Direccion capturada", incoming_msg)
+            msg = resp_twilio.message("Gracias. Hemos guardado tus datos correctamente.")
+            if sender_id in conversation_history:
+                del conversation_history[sender_id]
+        except Exception as e:
+            msg = resp_twilio.message("Error al guardar datos.")
     else:
         conversation_history[sender_id].append({"role": "assistant", "content": bot_reply})
         msg = resp_twilio.message(bot_reply)
