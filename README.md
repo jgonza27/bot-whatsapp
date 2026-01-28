@@ -29,23 +29,13 @@ Para levantar este proyecto necesitas:
     pip install -r requirements.txt
     ```
 
-## Configuración
+## ▶Cómo levantar el proyecto
 
-Este proyecto utiliza **Streamlit Secrets** para la conexión segura.
+Una vez clonado el repositorio y con las dependencias instaladas, sigue estos comandos para iniciar la aplicación:
 
-1.  Crea una carpeta llamada `.streamlit` en la raíz del proyecto.
-2.  Dentro, crea un archivo llamado `secrets.toml`.
-3.  Pega tus credenciales de Google en el siguiente formato:
 
-```toml
-[gcp_service_account]
-type = "service_account"
-project_id = "tu-project-id"
-private_key_id = "tu-private-key-id"
-private_key = "-----BEGIN PRIVATE KEY-----\n..."
-client_email = "tu-email@tu-proyecto.iam.gserviceaccount.com"
-client_id = "tu-client-id"
-auth_uri = "[https://accounts.google.com/o/oauth2/auth](https://accounts.google.com/o/oauth2/auth)"
-token_uri = "[https://oauth2.googleapis.com/token](https://oauth2.googleapis.com/token)"
-auth_provider_x509_cert_url = "[https://www.googleapis.com/oauth2/v1/certs](https://www.googleapis.com/oauth2/v1/certs)"
-client_x509_cert_url = "[https://www.googleapis.com/robot/v1/metadata/x509/](https://www.googleapis.com/robot/v1/metadata/x509/)..."
+### 1. Ejecutar la aplicación
+Una vez activo el entorno, lanza el siguiente comando:
+
+```bash
+streamlit run main.py
