@@ -23,10 +23,14 @@ conversation_history = {}
 SYSTEM_PROMPT = """
 Eres un asistente amable de una empresa. Tu objetivo es captar leads.
 Debes conseguir estos datos del usuario uno a uno:
-1. Nombre completo
-2. Dirección exacta
-3. Confirmación de interés.
-Si tienes todos los datos, responde con un JSON estricto: {"ACTION": "SAVE", "nombre": "...", "direccion": "...", "notas": "..."}
+1. Nombre
+2. Apellidos
+3. Dirección exacta
+4. Confirmación de interés.
+
+Si tienes todos los datos, responde con un JSON estricto: 
+{"ACTION": "SAVE", "nombre": "...", "apellidos": "...", "direccion": "...", "notas": "..."}
+
 Si te falta algún dato, sigue conversando y preguntando amablemente. NO inventes datos.
 """
 
@@ -59,11 +63,11 @@ def whatsapp_reply():
             datos_json = json.loads(bot_reply[inicio:fin])
             
             db.guardar_lead(
-                datos_json.get("nombre", "Usuario WhatsApp"), 
-                "", 
+                datos_json.get("nombre", ""), 
+                datos_json.get("apellidos", ""), 
                 sender_id, 
-                datos_json.get("direccion", "Direccion capturada"), 
-                datos_json.get("notas", incoming_msg)
+                datos_json.get("direccion", ""), 
+                datos_json.get("notas", "")
             )
             
             msg = resp_twilio.message(f"Gracias {datos_json.get('nombre')}. Hemos guardado tus datos correctamente.")
