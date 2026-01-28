@@ -9,8 +9,8 @@ Para levantar este proyecto necesitas:
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone <URL_DE_TU_REPOSITORIO>
-    cd nombre-de-la-carpeta
+    git clone <https://github.com/jgonza27/bot-whatsapp.git>
+    cd bot-whatsapp
     ```
 
 2.  **Crear un entorno virtual:**
