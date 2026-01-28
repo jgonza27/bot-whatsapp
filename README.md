@@ -29,13 +29,17 @@ Para levantar este proyecto necesitas:
     pip install -r requirements.txt
     ```
 
-## ▶Cómo levantar el proyecto
-
-Una vez clonado el repositorio y con las dependencias instaladas, sigue estos comandos para iniciar la aplicación:
-
-
-### 1. Ejecutar la aplicación
-Una vez activo el entorno, lanza el siguiente comando:
+### Ejecutar la aplicación
+Una vez activo el entorno, lanza los siguientes comandos:
 
 ```bash
-streamlit run main.py
+streamlit run dashboard.py
+    ```
+
+```bash
+    ngrok http 5000
+    ```
+
+```bash
+    python main.py
+    ```
