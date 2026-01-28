@@ -29,7 +29,8 @@ Para levantar este proyecto necesitas:
     pip install -r requirements.txt
     ```
 
-# Ejecutar la aplicación
+# Ejecutar la aplicació
+
 # Una vez activo el entorno, lanza los siguientes comandos:
 
 streamlit run dashboard.py
